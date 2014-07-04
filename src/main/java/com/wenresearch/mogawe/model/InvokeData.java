@@ -11,7 +11,7 @@ public class InvokeData {
 
 	private String name;
 	private String procedure;
-	private JsonArray parameters;
+	private Object[] parameters;
 	
 	public InvokeData(String jsonString){
 		JsonParser parser = new JsonParser();
@@ -20,7 +20,14 @@ public class InvokeData {
 			JsonObject json = (JsonObject) el;
 			this.name = json.get(InvokeConstants.NAME).getAsString();
 			this.procedure = json.get(InvokeConstants.PROC).getAsString();
-			this.parameters = json.get(InvokeConstants.PARAMS).getAsJsonArray();
+			
+			JsonArray arr = json.get(InvokeConstants.PARAMS).getAsJsonArray();
+			if(arr!=null){
+				this.parameters = new Object[arr.size()];
+				for(int i=0;i<arr.size();i++){
+					this.parameters[i] = arr.get(i);
+				}
+			}
 		}
 	}
 	public String getName() {
@@ -35,10 +42,10 @@ public class InvokeData {
 	public void setProcedure(String procedure) {
 		this.procedure = procedure;
 	}
-	public JsonArray getParameters() {
+	public Object[] getParameters() {
 		return parameters;
 	}
-	public void setParameters(JsonArray parameters) {
+	public void setParameters(Object[] parameters) {
 		this.parameters = parameters;
 	}
 	public String toJson(){
