@@ -60,11 +60,12 @@ public class ApiController {
 	private Map run(HttpServletRequest request, InvokeData invokeData)
 			throws MogawayException {
 
+		String name = invokeData.getName();
 		ServletContext application = request.getServletContext();
 
 		String rhinoPath = application.getRealPath("WEB-INF/rhino/js.jar");
 		String pathFile = application
-				.getRealPath("WEB-INF/connector/simple/simple.js");
+				.getRealPath("WEB-INF/connector/"+name+"/"+name+"-impl.js");
 
 
 		Map<String,String> map = new HashMap<String,String>();
