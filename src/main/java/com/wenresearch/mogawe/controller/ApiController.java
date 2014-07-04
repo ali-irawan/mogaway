@@ -1,11 +1,8 @@
 package com.wenresearch.mogawe.controller;
 
-import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +10,13 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJSON;
+import org.mozilla.javascript.NativeJavaPackage;
+import org.mozilla.javascript.Scriptable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -58,71 +61,44 @@ public class ApiController {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Map run(HttpServletRequest request, InvokeData invokeData)
-			throws MogawayException {
+			throws MogawayException, JsonParseException, JsonMappingException, IOException {
 
 		String name = invokeData.getName();
+		String procedure = invokeData.getProcedure();
+		
 		ServletContext application = request.getServletContext();
 
 		String rhinoPath = application.getRealPath("WEB-INF/rhino/js.jar");
 		String pathFile = application
 				.getRealPath("WEB-INF/connector/"+name+"/"+name+"-impl.js");
 
+		FileInputStream fis = new FileInputStream(new File(pathFile));
+		String jsCode = Util.read(fis);
+		fis.close();
+		
+		log.debug("Code: " + jsCode);
+		
+		String args = StringUtils.arrayToCommaDelimitedString(invokeData.getParameters());
+		jsCode += procedure+"("+args+");";
 
+		
+		
+		log.debug("Code: " + jsCode);
+
+		Context ctx = Context.enter();	
+		
+		// Execute the script
 		Map<String,String> map = new HashMap<String,String>();
-
-		String[] commands = { "java", "-jar", rhinoPath };
-		InputStream in = null;
-		OutputStream out = null;
-		Process process = null;
-		try {
-			process = Runtime.getRuntime().exec(commands);
-			in = process.getInputStream();
-			out = process.getOutputStream();
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-			String args = StringUtils.arrayToCommaDelimitedString(invokeData.getParameters());
-			 
-			PrintWriter pw = new PrintWriter(out);
-			pw.println("load(\"" + pathFile + "\")");
-			pw.print("print(JSON.stringify("); 
-			pw.print(invokeData.getProcedure());
-			pw.print("(");
-			pw.print(args);
-			pw.print(")))");
-			
-			pw.close();
-			out.close();
-
-			String output = null;
-			output = br.readLine();
-
-			log.debug("> " + output);
-
-			// Convert output to Map
-
-			ObjectMapper mapper = new ObjectMapper();
-
-			map = mapper.readValue(output, HashMap.class);
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new MogawayException(e.getMessage());
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-				}
-			}
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-				}
-			}
-			process.destroy();
-		}
+		
+		Scriptable scope = ctx.initStandardObjects();
+        Object result = ctx.evaluateString(scope,jsCode, name, 1, null);
+        Object json = NativeJSON.stringify(ctx, scope, result, null, null);
+        
+        String output = Context.toString(json);
+        log.debug("Output: " + output);
+        
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(output, HashMap.class);
 
 		return map;
 	}

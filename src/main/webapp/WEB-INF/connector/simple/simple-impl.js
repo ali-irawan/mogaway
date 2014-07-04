@@ -8,3 +8,8 @@ function simpleProc(param1, param2){
 	   }
 	};
 }
+
+function testHttp(){
+	
+	return com.wenresearch.mogawe.http.Server.invokeHttp();
+}
