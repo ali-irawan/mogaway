@@ -1,4 +1,4 @@
-package com.wenresearch.mogawe.core;
+package com.wenresearch.mogaway.core;
 
 @SuppressWarnings("serial")
 public class MogawayException extends Exception {

@@ -1,4 +1,4 @@
-package com.wenresearch.mogawe.model;
+package com.wenresearch.mogaway.model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

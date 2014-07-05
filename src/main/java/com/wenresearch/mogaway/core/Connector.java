@@ -1,4 +1,4 @@
-package com.wenresearch.mogawe.core;
+package com.wenresearch.mogaway.core;
 
 import com.google.gson.JsonObject;
 

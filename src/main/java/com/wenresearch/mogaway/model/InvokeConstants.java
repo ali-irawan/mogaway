@@ -1,4 +1,4 @@
-package com.wenresearch.mogawe.model;
+package com.wenresearch.mogaway.model;
 
 public class InvokeConstants {
 

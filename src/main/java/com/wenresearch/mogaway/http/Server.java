@@ -1,4 +1,4 @@
-package com.wenresearch.mogawe.http;
+package com.wenresearch.mogaway.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,8 +10,8 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.Scriptable;
 
-import com.wenresearch.mogawe.core.NullCallable;
-import com.wenresearch.mogawe.util.Util;
+import com.wenresearch.mogaway.core.NullCallable;
+import com.wenresearch.mogaway.util.Util;
 
 public class Server {
 

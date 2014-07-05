@@ -1,4 +1,4 @@
-package com.wenresearch.mogawe.controller;
+package com.wenresearch.mogaway.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,9 +24,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.wenresearch.mogawe.core.MogawayException;
-import com.wenresearch.mogawe.model.InvokeData;
-import com.wenresearch.mogawe.util.Util;
+import com.wenresearch.mogaway.core.MogawayException;
+import com.wenresearch.mogaway.model.InvokeData;
+import com.wenresearch.mogaway.util.Util;
 
 /**
  * Standard API controller

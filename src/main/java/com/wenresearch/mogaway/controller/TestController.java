@@ -1,4 +1,4 @@
-package com.wenresearch.mogawe.controller;
+package com.wenresearch.mogaway.controller;
 
 import java.util.HashMap;
 import java.util.Map;

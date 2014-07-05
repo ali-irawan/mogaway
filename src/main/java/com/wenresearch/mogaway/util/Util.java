@@ -1,10 +1,10 @@
-package com.wenresearch.mogawe.util;
+package com.wenresearch.mogaway.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.wenresearch.mogawe.model.InvokeData;
+import com.wenresearch.mogaway.model.InvokeData;
 
 public class Util {
 
