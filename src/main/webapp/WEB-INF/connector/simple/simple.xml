@@ -3,7 +3,7 @@
     <type>http</type>
     <configuration>
     	<host>localhost</host>
-    	<port>8080</port>    
+    	<port>8080</port>
     </configuration>
     <procedures>
 		<procedure name="simpleProc" />

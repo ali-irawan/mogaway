@@ -10,6 +10,8 @@ function simpleProc(param1, param2){
 }
 
 function testHttp(){
-	
-	return com.wenresearch.mogawe.http.Server.invokeHttp();
+	var request = {
+		url: "mogaway/test/index"	
+	};
+	return Mogaway.getServer().callHttp(request);
 }
