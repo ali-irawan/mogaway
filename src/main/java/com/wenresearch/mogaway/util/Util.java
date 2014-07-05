@@ -49,9 +49,9 @@ public class Util {
 	}
 	
 	/**
-	 * 
-	 * @param inputStream
-	 * @return
+	 * Parse JSON call
+	 * @param inputStream input stream JSON
+	 * @return return invoke call
 	 */
 	public static InvokeCall parseJsonCall(InputStream inputStream) {
 		InvokeCall invokeCall = null;
