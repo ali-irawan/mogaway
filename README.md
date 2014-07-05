@@ -16,8 +16,18 @@ Getting Started
 
 Clone the source
 
+```
 git clone https://github.com/ali-irawan/mogaway.git
+```
 
 Run
 
+```
 mvn package jetty:run 
+```
+
+Open in browser
+
+```
+http://localhost:8080/mogaway
+```
