@@ -6,13 +6,22 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-
+/**
+ * Invoke call
+ * 
+ * @author Ali Irawan
+ *
+ */
 public class InvokeCall {
 
 	private String name;
 	private String procedure;
 	private Object[] parameters;
 	
+	/**
+	 * Build invoke call by JSON string
+	 * @param jsonString json string for invoke call
+	 */
 	public InvokeCall(String jsonString){
 		JsonParser parser = new JsonParser();
 		JsonElement el = (JsonElement) parser.parse(jsonString);
