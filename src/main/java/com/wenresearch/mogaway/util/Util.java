@@ -4,10 +4,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.wenresearch.mogaway.model.InvokeData;
+import com.wenresearch.mogaway.model.InvokeCall;
 
+/**
+ * Utility class
+ * 
+ * @author Ali Irawan
+ * @version 1.0
+ * 
+ */
 public class Util {
 
+	/**
+	 * Read from input stream and return as string
+	 * @param inputStream input stream bytes
+	 * @return string content
+	 */
 	public static String read(InputStream inputStream) {
 		String str = "";
 		InputStream is = null;
@@ -35,8 +47,14 @@ public class Util {
 		}
 		return str;
 	}
-	public static InvokeData parseJsonBody(InputStream inputStream) {
-		InvokeData invokeData = null;
+	
+	/**
+	 * 
+	 * @param inputStream
+	 * @return
+	 */
+	public static InvokeCall parseJsonCall(InputStream inputStream) {
+		InvokeCall invokeCall = null;
 		
 		String str = "";
 		InputStream is = null;
@@ -52,7 +70,7 @@ public class Util {
 			str = new String(sw.toByteArray());
 			sw.close();
 			
-			invokeData = new InvokeData(str);
+			invokeCall = new InvokeCall(str);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -63,6 +81,6 @@ public class Util {
 				}
 			}
 		}
-		return invokeData;
+		return invokeCall;
 	}
 }

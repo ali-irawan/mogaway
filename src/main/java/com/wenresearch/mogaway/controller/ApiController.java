@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.wenresearch.mogaway.core.MogawayException;
-import com.wenresearch.mogaway.model.InvokeData;
+import com.wenresearch.mogaway.model.InvokeCall;
 import com.wenresearch.mogaway.util.Util;
 
 /**
@@ -50,7 +50,7 @@ public class ApiController {
 			HttpServletResponse response) throws IOException, MogawayException {
 		log.info("Execute service");
 
-		InvokeData invokeData = Util.parseJsonBody(request.getInputStream());
+		InvokeCall invokeData = Util.parseJsonCall(request.getInputStream());
 
 		log.debug("query: " + invokeData.toJson());
 
@@ -60,7 +60,7 @@ public class ApiController {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Map run(HttpServletRequest request, InvokeData invokeData)
+	private Map run(HttpServletRequest request, InvokeCall invokeData)
 			throws MogawayException, JsonParseException, JsonMappingException, IOException {
 
 		String name = invokeData.getName();

@@ -7,13 +7,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
-public class InvokeData {
+public class InvokeCall {
 
 	private String name;
 	private String procedure;
 	private Object[] parameters;
 	
-	public InvokeData(String jsonString){
+	public InvokeCall(String jsonString){
 		JsonParser parser = new JsonParser();
 		JsonElement el = (JsonElement) parser.parse(jsonString);
 		if(el instanceof JsonObject){
