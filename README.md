@@ -31,3 +31,45 @@ Open in browser
 ```
 http://localhost:8080/mogaway
 ```
+
+Send POST request to
+
+```
+http://localhost:8080/mogaway/api/service
+```
+
+With JSON data
+
+```javascript
+{
+   "name": "simple",
+   "proc": "simpleProc",
+   "params": [1,6]
+}
+```
+This will call the **simple** connector with procedure **simpleProc**
+The simpleProc is implemented as follow
+
+```
+function simpleProc(param1, param2){
+	
+	return {
+	   status: "OK",
+	   payload: {
+		   test: param1,
+	   	   data: param2
+	   }
+	};
+}
+```
+The output returned will be as follow
+
+```
+{
+   status: "OK",
+   payload: {
+      test: 1,
+      data: 6
+   }
+}
+```
