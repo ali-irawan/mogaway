@@ -15,8 +15,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJSON;
-import org.mozilla.javascript.NativeJavaPackage;
-import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,6 +23,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.wenresearch.mogaway.core.Mogaway;
+import com.wenresearch.mogaway.core.MogawayContext;
 import com.wenresearch.mogaway.core.MogawayException;
 import com.wenresearch.mogaway.model.InvokeCall;
 import com.wenresearch.mogaway.util.Util;
@@ -40,9 +41,8 @@ import com.wenresearch.mogaway.util.Util;
 @RequestMapping("api")
 public class ApiController {
 
-	private final static Logger log = LoggerFactory
-			.getLogger(ApiController.class);
-
+	private final static Logger log = LoggerFactory.getLogger(ApiController.class);
+	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping("/service")
 	@ResponseBody
@@ -68,34 +68,48 @@ public class ApiController {
 		
 		ServletContext application = request.getServletContext();
 
-		String rhinoPath = application.getRealPath("WEB-INF/rhino/js.jar");
-		String pathFile = application
-				.getRealPath("WEB-INF/connector/"+name+"/"+name+"-impl.js");
+		String xmlFile = application.getRealPath("WEB-INF/connector/"+name+"/"+name+".xml");
+		String pathFile = application.getRealPath("WEB-INF/connector/"+name+"/"+name+"-impl.js");
 
+		// Read xml and configure it as ConnectorModel
+		// TODO
+		
+		// Read Javascript implementation code
 		FileInputStream fis = new FileInputStream(new File(pathFile));
 		String jsCode = Util.read(fis);
 		fis.close();
 		
 		log.debug("Code: " + jsCode);
-		
+
+		// Adding procedure function call
 		String args = StringUtils.arrayToCommaDelimitedString(invokeData.getParameters());
 		jsCode += procedure+"("+args+");";
 
-		
-		
-		log.debug("Code: " + jsCode);
 
-		Context ctx = Context.enter();	
+		Context ctx = Context.enter();
+		ScriptableObject scope = ctx.initStandardObjects();
 		
+		// Inject some object into context
+        
+        Mogaway mogaway = MogawayContext.getContext().getBean(Mogaway.class);
+        
+        // TODO protocol, host, and port should take from ConnectorModel
+        mogaway.server.setProtocol("http");
+        mogaway.server.setHost("localhost");
+        mogaway.server.setPort(8080);
+        scope.put("Mogaway", scope, mogaway);
+        scope.put("Log", scope, log);
+        
 		// Execute the script
 		Map<String,String> map = new HashMap<String,String>();
 		
-		Scriptable scope = ctx.initStandardObjects();
         Object result = ctx.evaluateString(scope,jsCode, name, 1, null);
         Object json = NativeJSON.stringify(ctx, scope, result, null, null);
         
         String output = Context.toString(json);
         log.debug("Output: " + output);
+        
+        Context.exit();
         
         ObjectMapper mapper = new ObjectMapper();
         map = mapper.readValue(output, HashMap.class);
