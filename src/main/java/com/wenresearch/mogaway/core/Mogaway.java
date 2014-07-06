@@ -11,10 +11,6 @@ import com.wenresearch.mogaway.http.Server;
 public class Mogaway {
 
 	@Autowired
-	private Server server;
-
-	public Server getServer() {
-		return server;
-	}
+	public Server server;
 
 }
