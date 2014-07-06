@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.wenresearch.mogaway.core.Mogaway;
 import com.wenresearch.mogaway.core.MogawayContext;
 import com.wenresearch.mogaway.core.MogawayException;
+import com.wenresearch.mogaway.model.ConnectorModel;
 import com.wenresearch.mogaway.model.InvokeCall;
 import com.wenresearch.mogaway.util.Util;
 
@@ -73,6 +74,16 @@ public class ApiController {
 
 		// Read xml and configure it as ConnectorModel
 		// TODO
+		FileInputStream xmlInput = new FileInputStream(new File(xmlFile));
+		String xmlString = Util.read(xmlInput);
+		xmlInput.close();
+
+		ConnectorModel connectorModel = null;
+		try{
+			connectorModel = new ConnectorModel(xmlString);
+		}catch(Exception ex){
+			throw new MogawayException(ex.getMessage());
+		}
 		
 		// Read Javascript implementation code
 		FileInputStream fis = new FileInputStream(new File(pathFile));
@@ -90,13 +101,7 @@ public class ApiController {
 		ScriptableObject scope = ctx.initStandardObjects();
 		
 		// Inject some object into context
-        
-        Mogaway mogaway = MogawayContext.getContext().getBean(Mogaway.class);
-        
-        // TODO protocol, host, and port should take from ConnectorModel
-        mogaway.server.setProtocol("http");
-        mogaway.server.setHost("localhost");
-        mogaway.server.setPort(8080);
+        Mogaway mogaway = this.prepareMogawayObject(connectorModel);
         scope.put("Mogaway", scope, mogaway);
         scope.put("Log", scope, log);
         
@@ -115,5 +120,13 @@ public class ApiController {
         map = mapper.readValue(output, HashMap.class);
 
 		return map;
+	}
+	
+	private Mogaway prepareMogawayObject(ConnectorModel connectorModel){
+        Mogaway mogaway = MogawayContext.getContext().getBean(Mogaway.class);
+        
+        mogaway.server.setConfiguration(connectorModel.getConfiguration());
+        
+        return mogaway;
 	}
 }
