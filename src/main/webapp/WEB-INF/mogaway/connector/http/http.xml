@@ -2,6 +2,7 @@
 <connector>
     <type>http</type>
     <configuration>
+        <protocol>http</protocol>
     	<host>localhost</host>
     	<port>8080</port>
     </configuration>
