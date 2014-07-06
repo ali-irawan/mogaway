@@ -68,8 +68,8 @@ public class ApiController {
 		
 		ServletContext application = request.getServletContext();
 
-		String xmlFile = application.getRealPath("WEB-INF/connector/"+name+"/"+name+".xml");
-		String pathFile = application.getRealPath("WEB-INF/connector/"+name+"/"+name+"-impl.js");
+		String xmlFile = application.getRealPath("WEB-INF/mogaway/connector/"+name+"/"+name+".xml");
+		String pathFile = application.getRealPath("WEB-INF/mogaway/connector/"+name+"/"+name+"-impl.js");
 
 		// Read xml and configure it as ConnectorModel
 		// TODO
