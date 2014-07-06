@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connector>
+    <type>sql</type>
+    <configuration>
+    	<driver>org.postgresql.Driver</driver>
+    	<url>jdbc:postgresql://localhost:5432/mogaway</url>
+    	<username>postgres</username>
+    	<password>postgres</password>
+    </configuration>
+    <procedures>
+		<procedure name="testSelect" />
+    </procedures>
+</connector>
