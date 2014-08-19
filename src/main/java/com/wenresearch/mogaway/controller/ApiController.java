@@ -3,6 +3,7 @@ package com.wenresearch.mogaway.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import com.wenresearch.mogaway.core.ServerPropertiesConstants;
 import com.wenresearch.mogaway.model.ConnectorInfo;
 import com.wenresearch.mogaway.model.ConnectorModel;
 import com.wenresearch.mogaway.model.InvokeCall;
+import com.wenresearch.mogaway.util.DateUtil;
 import com.wenresearch.mogaway.util.Util;
 
 /**
@@ -111,10 +113,13 @@ public class ApiController {
 		Context ctx = Context.enter();
 		ScriptableObject scope = ctx.initStandardObjects();
 		
+		
 		// Inject some object into context
         Mogaway mogaway = this.prepareMogawayObject(connectorModel);
         scope.put("Mogaway", scope, mogaway);
         scope.put("Log", scope, log);
+        scope.put("Headers", scope, getHeader(request));
+        scope.put("Session", scope, request.getSession());
         
 		// Execute the script
 		Map<String,String> map = new HashMap<String,String>();
@@ -133,6 +138,15 @@ public class ApiController {
 		return map;
 	}
 	
+	private Map<String,String> getHeader(HttpServletRequest request){
+		Enumeration<String> e = request.getHeaderNames();
+		Map<String,String> headers = new HashMap<String, String>();
+		while(e.hasMoreElements()){
+			String key = e.nextElement();
+			headers.put(key, request.getHeader(key));
+		}
+		return headers;
+	}
 	private ConnectorInfo getConnectorInfo(ServletContext application, String name){
 
 		// Try to find from default
