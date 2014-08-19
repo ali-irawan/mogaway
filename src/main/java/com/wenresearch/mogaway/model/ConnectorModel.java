@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 public class ConnectorModel {
 
 	private final static Logger log = LoggerFactory.getLogger(ConnectorModel.class);
-	
+
 	private String type;
 	private Map<String,String> configuration;
 	private List<Procedure> procedures;
