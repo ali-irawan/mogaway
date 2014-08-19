@@ -1,5 +1,7 @@
 package com.wenresearch.mogaway.http;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,18 +14,35 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.ServletContextAware;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.wenresearch.mogaway.core.Mogaway;
 import com.wenresearch.mogaway.core.MogawayContants;
+import com.wenresearch.mogaway.core.MogawayException;
 import com.wenresearch.mogaway.core.NullCallable;
+import com.wenresearch.mogaway.core.ServerProperties;
+import com.wenresearch.mogaway.model.ConnectorInfo;
+import com.wenresearch.mogaway.model.ConnectorModel;
+import com.wenresearch.mogaway.util.ConnectorHelper;
 import com.wenresearch.mogaway.util.JsonParserUtil;
 import com.wenresearch.mogaway.util.Util;
 
@@ -36,10 +55,18 @@ import com.wenresearch.mogaway.util.Util;
  */
 @Component
 @Scope("prototype")
-public class Server {
+public class Server implements ServletContextAware {
 	private final static Logger log = LoggerFactory.getLogger(Server.class);
 
 	private Map<String, String> configuration;
+	private ServletContext application;
+
+	@Autowired
+	private ServerProperties serverProperties;
+	private HttpServletRequest request;
+	
+	@Autowired
+	private ConnectorHelper connHelper;
 
 	public Server() {
 		configuration = new HashMap<String, String>();
@@ -51,6 +78,66 @@ public class Server {
 
 	private void validateCallHttpJsonRequest(JsonObject jsonObject) {
 
+	}
+
+	public Object callProcedure(String connectorName, String procedureName,	Object parameters) throws JsonParseException, JsonMappingException, IOException, MogawayException {
+		log.debug("Params type: " + parameters.getClass().getName());
+		
+		ConnectorInfo connInfo = connHelper.getConnectorInfo(application, connectorName);
+		if(connInfo==null){
+			throw new MogawayException("Connector '" + connectorName + "' not found");
+		}
+		
+		String xmlFile = connInfo.getXmlFilePath();
+		String pathFile = connInfo.getJsFilePath();
+
+		// Read xml and configure it as ConnectorModel
+		FileInputStream xmlInput = new FileInputStream(new File(xmlFile));
+		String xmlString = Util.read(xmlInput);
+		xmlInput.close();
+
+		ConnectorModel connectorModel = null;
+		try{
+			connectorModel = new ConnectorModel(xmlString);
+		}catch(Exception ex){
+			throw new MogawayException(ex.getMessage());
+		}
+		
+		// Read Javascript implementation code
+		FileInputStream fis = new FileInputStream(new File(pathFile));
+		String jsCode = Util.read(fis);
+		fis.close();
+		
+		log.debug("Code: " + jsCode);
+
+		// Adding procedure function call
+		NativeArray params = (NativeArray) parameters;
+		
+		String[] arr = new String[params.size()];
+		for(int i=0;i<params.size();i++){
+			arr[i] = "\"" + params.get(i).toString() + "\"";
+		}
+		String args = StringUtils.arrayToCommaDelimitedString(arr);
+		jsCode += procedureName+"("+args+");";
+ 
+		log.debug("***** JSCODE: " +jsCode);
+
+		Context ctx = Context.enter();
+		ScriptableObject scope = ctx.initStandardObjects();
+		
+		// Inject some object into context
+        Mogaway.prepareMogawayObject(scope, request, connectorModel);
+        
+        Object result = ctx.evaluateString(scope,jsCode, connectorName, 1, null);
+        Object json = NativeJSON.stringify(ctx, scope, result, null, null);
+        
+        String output = Context.toString(json);
+        log.debug("Output: " + output);
+        
+        Context.exit();
+
+        JsonObject jsonObject = (JsonObject) JsonParserUtil.parse(output);
+        return jsonObject.toString();
 	}
 
 	public Object callHttp(Object json) throws MalformedURLException,
@@ -75,7 +162,7 @@ public class Server {
 		String host = configuration.get("host");
 		String port = configuration.get("port");
 		String prefix = protocol + "://" + host + ":" + port + "/";
-		
+
 		String url = prefix
 				+ jsonObject.get(MogawayContants.PARAM_URL).getAsString();
 		String method = (jsonObject.has(MogawayContants.PARAM_METHOD)) ? jsonObject
@@ -144,6 +231,20 @@ public class Server {
 		Object result = NativeJSON.parse(ctx, scope, response,
 				new NullCallable());
 		return result;
+	}
+
+	@Override
+	public void setServletContext(ServletContext arg0) {
+		this.application = arg0;
+
+	}
+
+	public HttpServletRequest getRequest() {
+		return request;
+	}
+
+	public void setRequest(HttpServletRequest request) {
+		this.request = request;
 	}
 
 }
