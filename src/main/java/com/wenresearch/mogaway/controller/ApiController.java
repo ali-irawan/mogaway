@@ -3,6 +3,7 @@ package com.wenresearch.mogaway.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,12 +26,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.wenresearch.mogaway.core.Mogaway;
+import com.wenresearch.mogaway.core.MogawayContants;
 import com.wenresearch.mogaway.core.MogawayException;
 import com.wenresearch.mogaway.core.ServerProperties;
 import com.wenresearch.mogaway.model.ConnectorInfo;
 import com.wenresearch.mogaway.model.ConnectorModel;
 import com.wenresearch.mogaway.model.InvokeCall;
 import com.wenresearch.mogaway.util.ConnectorHelper;
+import com.wenresearch.mogaway.util.EncodeUtil;
 import com.wenresearch.mogaway.util.Util;
 
 /**
@@ -56,23 +59,48 @@ public class ApiController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping("/service")
 	@ResponseBody
-	public Map executeService(HttpServletRequest request,
+	public String executeService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, MogawayException {
 		log.info("Execute service");
 
-		InvokeCall invokeData = Util.parseJsonCall(request.getInputStream());
+		// Check if encrypt or not
+		boolean useEncryption = false;
+		String format = request.getHeader(MogawayContants.HTTP_HEADER_FORMAT);
+		if(format!=null && format.equals(MogawayContants.HTTP_HEADER_FORMAT_VALUE_ENCRYPT)){
+			useEncryption = true;
+		}
+
+		log.debug("Use encryption: " +useEncryption);
+		InvokeCall invokeData = Util.parseJsonCall(request.getInputStream(), useEncryption, (byte) 123456);
 
 		log.debug("query: " + invokeData.toJson());
 
-		// Run specified name
+		
+		
+		StringWriter jsonString = new StringWriter();
 
-		return run(request, invokeData);
+		// Run specified name
+		Map mapObject = run(request, invokeData);
+		
+		// Convert map to JSON
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.writeValue(jsonString, mapObject);
+		
+		String result = jsonString.toString();
+		log.debug("Result: " + result);
+		if(useEncryption){
+			response.setContentType("mogaway/data");
+			return EncodeUtil.toBase64(EncodeUtil.encrypt_decrypt(EncodeUtil.gzip(result.getBytes()), 123456));
+		}
+		response.setContentType("application/json");
+		return result;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Map run(HttpServletRequest request, InvokeCall invokeData)
 			throws MogawayException, JsonParseException, JsonMappingException, IOException {
 
+		
 		String name = invokeData.getName();
 		String procedure = invokeData.getProcedure();
 		
