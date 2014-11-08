@@ -73,3 +73,6 @@ The output returned will be as follow
    }
 }
 ```
+
+Using actuator
+http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready
