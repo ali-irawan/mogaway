@@ -32,14 +32,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.wenresearch.mogaway.ServiceProperties;
 import com.wenresearch.mogaway.core.Mogaway;
 import com.wenresearch.mogaway.core.MogawayContants;
 import com.wenresearch.mogaway.core.MogawayException;
 import com.wenresearch.mogaway.core.NullCallable;
-import com.wenresearch.mogaway.core.ServerProperties;
 import com.wenresearch.mogaway.model.ConnectorInfo;
 import com.wenresearch.mogaway.model.ConnectorModel;
 import com.wenresearch.mogaway.util.ConnectorHelper;
@@ -62,7 +61,7 @@ public class Server implements ServletContextAware {
 	private ServletContext application;
 
 	@Autowired
-	private ServerProperties serverProperties;
+	private ServiceProperties serviceProperties;
 	private HttpServletRequest request;
 	
 	@Autowired

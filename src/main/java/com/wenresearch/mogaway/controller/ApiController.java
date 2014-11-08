@@ -20,15 +20,16 @@ import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.wenresearch.mogaway.ServiceProperties;
 import com.wenresearch.mogaway.core.Mogaway;
 import com.wenresearch.mogaway.core.MogawayContants;
 import com.wenresearch.mogaway.core.MogawayException;
-import com.wenresearch.mogaway.core.ServerProperties;
 import com.wenresearch.mogaway.model.ConnectorInfo;
 import com.wenresearch.mogaway.model.ConnectorModel;
 import com.wenresearch.mogaway.model.InvokeCall;
@@ -44,14 +45,15 @@ import com.wenresearch.mogaway.util.Util;
  * @author Ali Irawan
  * @version 1.0
  */
-@Controller
+@RestController
+@EnableAutoConfiguration
 @RequestMapping("api")
 public class ApiController {
 
 	private static final Logger log = LoggerFactory.getLogger(ApiController.class);
 
 	@Autowired
-	private ServerProperties properties;
+	private ServiceProperties properties;
 	
 	@Autowired
 	private ConnectorHelper connHelper;
@@ -59,7 +61,7 @@ public class ApiController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping("/service")
 	@ResponseBody
-	public String executeService(HttpServletRequest request,
+	public Object executeService(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, MogawayException {
 		log.info("Execute service");
 
@@ -87,13 +89,13 @@ public class ApiController {
 		objectMapper.writeValue(jsonString, mapObject);
 		
 		String result = jsonString.toString();
-		log.debug("Result: " + result);
+		// log.debug("Result: " + result);
 		if(useEncryption){
 			response.setContentType("mogaway/data");
 			return EncodeUtil.toBase64(EncodeUtil.encrypt_decrypt(EncodeUtil.gzip(result.getBytes()), 123456));
 		}
 		response.setContentType("application/json");
-		return result;
+		return mapObject;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -153,7 +155,7 @@ public class ApiController {
         Object json = NativeJSON.stringify(ctx, scope, result, null, null);
         
         String output = Context.toString(json);
-        log.debug("Output: " + output);
+        // log.debug("Output: " + output);
         
         Context.exit();
         
