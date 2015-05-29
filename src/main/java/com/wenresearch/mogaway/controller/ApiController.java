@@ -82,7 +82,18 @@ public class ApiController {
 		StringWriter jsonString = new StringWriter();
 
 		// Run specified name
-		Map mapObject = run(request, invokeData);
+		Map mapObject = null;
+		try {
+			mapObject = run(request, invokeData);
+		}catch(MogawayException mogEx){
+			
+			mapObject = new HashMap<String, String>();
+			mapObject.put("status","FAIL");
+			mapObject.put("error", mogEx.getMessage());
+			
+			response.setContentType("application/json");
+			return mapObject;
+		}
 		
 		// Convert map to JSON
 		ObjectMapper objectMapper = new ObjectMapper();

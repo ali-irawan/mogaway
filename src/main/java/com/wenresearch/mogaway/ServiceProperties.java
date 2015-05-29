@@ -9,6 +9,9 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 @ManagedResource
 public class ServiceProperties {
 	
+	@Value("${mogaway.skip.default}")
+	private String skipDefault;
+	
 	@Value("${mogaway.connector.dir}")
 	private String connectorDir;
 
@@ -20,6 +23,16 @@ public class ServiceProperties {
 	@ManagedAttribute
 	public void setConnectorDir(String connectorDir) {
 		this.connectorDir = connectorDir;
+	}
+
+	@ManagedAttribute
+	public String getSkipDefault() {
+		return skipDefault;
+	}
+
+	@ManagedAttribute
+	public void setSkipDefault(String skipDefault) {
+		this.skipDefault = skipDefault;
 	}
 
 }
