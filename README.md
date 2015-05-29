@@ -23,19 +23,25 @@ git clone https://github.com/ali-irawan/mogaway.git
 Run
 
 ```
-mvn package jetty:run 
+mvn package spring-boot:run 
+```
+
+Build JAR Standalone
+
+```
+mvn package 
 ```
 
 Open in browser
 
 ```
-http://localhost:8080/mogaway
+http://localhost:50000
 ```
 
 Send POST request to
 
 ```
-http://localhost:8080/mogaway/api/service
+http://localhost:50000/api/service
 ```
 
 With JSON data
