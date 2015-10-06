@@ -6,5 +6,6 @@
 	<body>
 		<h1>Welcome to Mogaway</h1>
 		<p>Lightweight Mobile Gateway</p>	
+		
 	</body>
 </html>
