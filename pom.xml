@@ -4,7 +4,7 @@
 	<groupId>com.wenresearch</groupId>
 	<artifactId>mogaway</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<!--<packaging>jar</packaging>-->
+	<!--<packaging>jar</packaging> -->
 	<name>Mogaway Server</name>
 	<description>Lightweight Mobile Gateway Server</description>
 
@@ -13,11 +13,11 @@
 		<spring.version>3.2.3.RELEASE</spring.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<javadoc.plugin.version>2.8.1</javadoc.plugin.version>
-		
+
 		<start-class>com.wenresearch.mogaway.Application</start-class>
 	</properties>
 
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -30,20 +30,20 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<dependencies>
 
 		<dependency>
-        	<groupId>org.springframework.boot</groupId>
-        	<artifactId>spring-boot-starter-web</artifactId>
-        	<exclusions>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
 			</exclusions>
-    	</dependency>
-    
+		</dependency>
+
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
@@ -95,9 +95,9 @@
 		</dependency>
 
 		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 	</dependencies>
 
 
@@ -108,13 +108,13 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>1.2.3.RELEASE</version>
-<executions>
-		    <execution>
-			<goals>
-			    <goal>repackage</goal>
-			</goals>
-		    </execution>
-		</executions>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
