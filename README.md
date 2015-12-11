@@ -87,6 +87,10 @@ Upload File
 Do http POST form multipart to 
 ```
 http://localhost:50000/upload
+
+* Do POST FILE with type multipart/form 
+with name parameter 'file'
+
 ```
 
 **Success Response** 
