@@ -9,6 +9,7 @@ Basic Feature
 ======
 - Lightweight web server for handling mobile request
 - Connector to back-end web service
+- Upload File
 - Connector to database (available soon)
 
 Getting Started
@@ -78,6 +79,43 @@ The output returned will be as follow
       data: 6
    }
 }
+```
+
+Upload File
+======
+
+Do http POST form multipart to 
+```
+http://localhost:50000/upload
+
+* Do POST FILE with type multipart/form 
+with name parameter 'file'
+
+```
+
+**Success Response** 
+```
+Path file stored in server
+
+/home/user/magaway-upload/abcabc-abcbabc-abcabba-abcbabc-acbabcb.txt
+
+```
+
+**Failed Response**
+```
+HTTP Error Code 500
+
+To get error get header properties with key errorMessage
+```
+
+**Configuration**
+Set configuration related to upload servlet here **src/main/resources/application.properties**
+```
+# Target Upload directory 
+mogaway.upload.dir=/home/sts/mogaway-upload/
+
+# Max file size permit to upload
+multipart.maxFileSize=10MB
 ```
 
 Using actuator
