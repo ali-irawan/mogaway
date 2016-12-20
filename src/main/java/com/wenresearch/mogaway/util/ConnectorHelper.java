@@ -21,7 +21,7 @@ public class ConnectorHelper {
 
 		String skipDefault = properties.getSkipDefault();
 
-		if(skipDefault == "false") {
+		if(skipDefault.equals("false")) {
 			// Try to find from default
 			String xmlFilePath = application.getRealPath("WEB-INF/mogaway/connector/" + name + "/" + name + ".xml");
 			String pathFilePath = application.getRealPath("WEB-INF/mogaway/connector/" + name + "/" + name	+ "-impl.js");

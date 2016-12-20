@@ -12,4 +12,8 @@ public class MogawayContants {
 	
 	public static final String HTTP_HEADER_FORMAT = "mogaway-format";
 	public static final String HTTP_HEADER_FORMAT_VALUE_ENCRYPT = "encrypt";
+	
+	
+	
+	public static final String REQUEST_OPTIONS_HEADER = "header";
 }

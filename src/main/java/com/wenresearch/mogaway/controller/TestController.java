@@ -43,8 +43,6 @@ public class TestController {
 		
 		Map map = new HashMap<String, Object>();
 		
-		map.put("status", "OK");
-		map.put("message", "This is for testing POST");
 		
 		Map payload = new HashMap<String, Object>();
 		Enumeration<String> e = request.getParameterNames();
@@ -57,6 +55,16 @@ public class TestController {
 		return map;
 	}
 	
+	private Map<String, String> getHeaderFromRequest(HttpServletRequest request) {
+		Enumeration<String> e = request.getHeaderNames();
+		Map<String,String> headers = new HashMap<String, String>();
+		while(e.hasMoreElements()){
+			String headerKey = e.nextElement();
+			headers.put(headerKey, request.getHeader(headerKey));
+		}
+		return headers;
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@RequestMapping(value="/index/json",method=RequestMethod.POST)
 	@ResponseBody
@@ -65,6 +73,16 @@ public class TestController {
 		log.debug("JSON: " + json);
 	
 		Map map = new HashMap<String, Object>();
+
+		// Since 20-dec-2016 adding support for headers
+		Map headers = getHeaderFromRequest(request);
+		
+		map.put("status", "OK");
+		map.put("message", "This is for testing POST");
+		
+		if(headers!=null && headers.size() > 0){
+			map.put("headers", headers);
+		}
 		
 		map.put("status", "OK");
 		map.put("json accepted", json.toString());

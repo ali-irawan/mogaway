@@ -138,8 +138,34 @@ public class Server implements ServletContextAware {
         JsonObject jsonObject = (JsonObject) JsonParserUtil.parse(output);
         return jsonObject.toString();
 	}
-
+	private void setRequestWithOptions(HttpURLConnection connection, JsonObject options){
+		Set<Entry<String, JsonElement>> entries = options.entrySet();
+		Iterator<Entry<String, JsonElement>> it = entries.iterator();
+		
+		while(it.hasNext()){
+			Entry<String, JsonElement> entry = it.next();
+			if(entry.getKey().equals(MogawayContants.REQUEST_OPTIONS_HEADER)){
+				this.setRequestWithHeaders(connection, entry.getValue().getAsJsonObject());
+			}
+		}
+	}
+	
+	private void setRequestWithHeaders(HttpURLConnection connection, JsonObject options){
+		Set<Entry<String, JsonElement>> entries = options.entrySet();
+		Iterator<Entry<String, JsonElement>> it = entries.iterator();
+		
+		while(it.hasNext()){
+			Entry<String, JsonElement> entry = it.next();
+			connection.setRequestProperty(entry.getKey(), entry.getValue().getAsString());
+			log.debug("Setting request header: " + entry.getKey() + "=" + entry.getValue());
+		}
+	}
+	
 	public Object callHttp(Object json) throws MalformedURLException,
+	IOException {
+		return this.callHttp(json, null);
+	}
+	public Object callHttp(Object json, Object options) throws MalformedURLException,
 			IOException {
 		Context ctx = Context.enter();
 		Scriptable scope = ctx.initStandardObjects();
@@ -149,8 +175,16 @@ public class Server implements ServletContextAware {
 		log.debug("Class: " + json.getClass().getName());
 
 		Object jsonString = NativeJSON.stringify(ctx, scope, json, null, null);
-		JsonObject jsonObject = (JsonObject) JsonParserUtil.parse(jsonString
-				.toString());
+		JsonObject jsonObject = (JsonObject) JsonParserUtil.parse(jsonString.toString());
+		
+		
+		Object jsonOptions = null;
+		JsonObject jsonOptionsObject = null;
+		
+		if(options!=null){
+			jsonOptions = NativeJSON.stringify(ctx, scope, options, null, null);
+			jsonOptionsObject = (jsonOptions!=null) ? (JsonObject) JsonParserUtil.parse(jsonOptions.toString()) : null;
+		}
 
 		Context.exit();
 
@@ -170,6 +204,10 @@ public class Server implements ServletContextAware {
 		HttpURLConnection httpConnection = (HttpURLConnection) new URL(url)
 				.openConnection();
 		httpConnection.setRequestMethod(method);
+		
+		if(options != null){
+			setRequestWithOptions(httpConnection, jsonOptionsObject);
+		}
 
 		if (MogawayContants.REQUEST_METHOD_POST.equals(method)) {
 			StringBuilder postPayload = new StringBuilder();
