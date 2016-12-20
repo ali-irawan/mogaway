@@ -14,6 +14,12 @@ public class ServiceProperties {
 	
 	@Value("${mogaway.connector.dir}")
 	private String connectorDir;
+	
+	@Value("${mogaway.archive.dir}")
+	private String archiveDir;
+	
+	@Value("${mogaway.temp.dir}")
+	private String tempDir;
 
 	@ManagedAttribute
 	public String getConnectorDir() {
@@ -33,6 +39,24 @@ public class ServiceProperties {
 	@ManagedAttribute
 	public void setSkipDefault(String skipDefault) {
 		this.skipDefault = skipDefault;
+	}
+
+	@ManagedAttribute
+	public String getArchiveDir() {
+		return archiveDir;
+	}
+
+	@ManagedAttribute
+	public void setArchiveDir(String archiveDir) {
+		this.archiveDir = archiveDir;
+	}
+
+	public String getTempDir() {
+		return tempDir;
+	}
+
+	public void setTempDir(String tempDir) {
+		this.tempDir = tempDir;
 	}
 
 }
